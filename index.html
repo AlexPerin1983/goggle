@@ -2,107 +2,173 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avaliar Nossa Empresa</title>
     <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #45a049;
+            --background-color: #f4f4f4;
+            --text-color: #333;
+            --border-radius: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
+            background-color: var(--background-color);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.5;
         }
+
         .container {
             background: #fff;
-            padding: 20px 40px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
             text-align: center;
-            max-width: 600px;
+            max-width: 100%;
             width: 100%;
         }
+
         h2 {
-            color: #333;
+            color: var(--text-color);
             margin-bottom: 20px;
+            font-size: 1.5rem;
         }
-        p {
-            color: #666;
+
+        .progress-container {
+            width: 100%;
+            background: var(--background-color);
+            border-radius: var(--border-radius);
             margin-bottom: 20px;
+            overflow: hidden;
         }
+
+        .progress-bar {
+            width: 0%;
+            height: 6px;
+            background: var(--primary-color);
+            transition: width 0.3s ease-in-out;
+        }
+
         .step {
             display: none;
         }
+
         .step.active {
             display: block;
         }
-        .progress-container {
-            width: 100%;
-            background: #f4f4f4;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        .progress-bar {
-            width: 0%;
-            height: 20px;
-            background: #4CAF50;
-            border-radius: 10px;
-            transition: width 0.3s;
-        }
-        .service-selection, .film-selection, .checkboxes {
+
+        .form-group {
             margin-bottom: 20px;
             text-align: left;
         }
-        .service-selection label, .film-selection label, .checkboxes label {
+
+        .form-group label {
             display: flex;
             align-items: center;
             margin-bottom: 10px;
             cursor: pointer;
         }
-        .service-selection input, .film-selection input, .checkboxes input {
+
+        .form-group input[type="checkbox"],
+        .form-group input[type="radio"] {
             margin-right: 10px;
+            width: 20px;
+            height: 20px;
         }
+
         .counter {
-            display: inline-block;
+            width: 50px;
             margin-left: 10px;
+            padding: 5px;
+            font-size: 1rem;
         }
+
         button {
-            background-color: #4CAF50;
+            background-color: var(--primary-color);
             color: white;
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 12px 20px;
+            font-size: 1rem;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin: 10px 5px;
+            width: calc(50% - 10px);
+            max-width: 200px;
         }
+
         button:hover {
-            background-color: #45a049;
+            background-color: var(--secondary-color);
         }
-        #preloader {
-            display: none;
-            margin-top: 20px;
-            border: 8px solid #f3f3f3; /* Light grey */
-            border-top: 8px solid #3498db; /* Blue */
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+
         #message {
             width: 100%;
             padding: 10px;
             margin-top: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            resize: vertical;
+            min-height: 100px;
+            font-size: 1rem;
+        }
+
+        #preloader {
             display: none;
-            resize: none;
+            margin: 20px auto;
+            border: 4px solid var(--background-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 1.2rem;
+            }
+
+            button {
+                width: 100%;
+                max-width: none;
+                margin: 10px 0;
+            }
+
+            .form-group label {
+                font-size: 0.9rem;
+            }
+
+            .counter {
+                width: 40px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -112,70 +178,77 @@
         <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
-        <div id="step1" class="step active">
-            <p>Selecione os serviços que você recebeu:</p>
-            <div class="service-selection">
-                <label><input type="checkbox" name="service" value="Janela"> Janela <input type="number" class="counter" name="janela_quantity" min="1" max="10" value="1" style="display: none;"></label>
-                <label><input type="checkbox" name="service" value="Porta"> Porta <input type="number" class="counter" name="porta_quantity" min="1" max="10" value="1" style="display: none;"></label>
+        <form id="review-form">
+            <div id="step1" class="step active">
+                <p>Selecione os serviços que você recebeu:</p>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="service" value="Janela"> Janela
+                        <input type="number" class="counter" name="janela_quantity" min="1" max="10" value="1" style="display: none;">
+                    </label>
+                    <label>
+                        <input type="checkbox" name="service" value="Porta"> Porta
+                        <input type="number" class="counter" name="porta_quantity" min="1" max="10" value="1" style="display: none;">
+                    </label>
+                </div>
+                <button type="button" onclick="nextStep()">Próximo</button>
             </div>
-            <button onclick="nextStep()">Próximo</button>
-        </div>
-        <div id="step2" class="step">
-            <p>Selecione o tipo de película:</p>
-            <div class="film-selection">
-                <label><input type="radio" name="film" value="Blackout"> Blackout</label>
-                <label><input type="radio" name="film" value="Jateada"> Jateada</label>
+            <div id="step2" class="step">
+                <p>Selecione o tipo de película:</p>
+                <div class="form-group">
+                    <label><input type="radio" name="film" value="Blackout"> Blackout</label>
+                    <label><input type="radio" name="film" value="Jateada"> Jateada</label>
+                </div>
+                <button type="button" onclick="prevStep()">Anterior</button>
+                <button type="button" onclick="nextStep()">Próximo</button>
             </div>
-            <button onclick="prevStep()">Anterior</button>
-            <button onclick="nextStep()">Próximo</button>
-        </div>
-        <div id="step3" class="step">
-            <p>Selecione os pontos positivos que você gostaria de destacar na avaliação:</p>
-            <div class="checkboxes">
-                <label><input type="checkbox" value="Serviço de qualidade"> Serviço de qualidade</label>
-                <label><input type="checkbox" value="Chegou no horário"> Chegou no horário</label>
+            <div id="step3" class="step">
+                <p>Selecione os pontos positivos que você gostaria de destacar na avaliação:</p>
+                <div class="form-group">
+                    <label><input type="checkbox" name="positive_points" value="Serviço de qualidade"> Serviço de qualidade</label>
+                    <label><input type="checkbox" name="positive_points" value="Chegou no horário"> Chegou no horário</label>
+                    <label><input type="checkbox" name="positive_points" value="Profissionais atenciosos"> Profissionais atenciosos</label>
+                    <label><input type="checkbox" name="positive_points" value="Resultado excepcional"> Resultado excepcional</label>
+                </div>
+                <button type="button" onclick="prevStep()">Anterior</button>
+                <button type="button" onclick="nextStep()">Próximo</button>
             </div>
-            <button onclick="prevStep()">Anterior</button>
-            <button onclick="nextStep()">Próximo</button>
-        </div>
-        <div id="step4" class="step">
-            <p>Revisão e cópia da avaliação:</p>
-            <textarea id="message" readonly></textarea>
-            <button onclick="prevStep()">Anterior</button>
-            <button onclick="copyAndOpenLink()">Copiar Avaliação e Avaliar</button>
-            <div id="preloader" class="spinner"></div>
-        </div>
+            <div id="step4" class="step">
+                <p>Revisão e cópia da avaliação:</p>
+                <textarea id="message" readonly></textarea>
+                <button type="button" onclick="prevStep()">Anterior</button>
+                <button type="button" onclick="copyAndOpenLink()">Copiar e Avaliar</button>
+                <div id="preloader"></div>
+            </div>
+        </form>
     </div>
 
     <script>
         let currentStep = 1;
+        const totalSteps = 4;
 
         document.querySelectorAll('input[name="service"]').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
                 const counter = this.nextElementSibling;
-                if (this.checked) {
-                    counter.style.display = 'inline-block';
-                } else {
-                    counter.style.display = 'none';
-                }
+                counter.style.display = this.checked ? 'inline-block' : 'none';
             });
         });
 
         function updateProgressBar() {
             const progressBar = document.getElementById('progress-bar');
-            progressBar.style.width = (currentStep - 1) * 33 + '%';
+            progressBar.style.width = `${((currentStep - 1) / (totalSteps - 1)) * 100}%`;
         }
 
         function nextStep() {
-            if (currentStep < 4) {
+            if (currentStep < totalSteps && validateStep()) {
                 document.getElementById(`step${currentStep}`).classList.remove('active');
                 currentStep++;
                 document.getElementById(`step${currentStep}`).classList.add('active');
                 updateProgressBar();
-            }
 
-            if (currentStep === 4) {
-                generateMessage();
+                if (currentStep === totalSteps) {
+                    generateMessage();
+                }
             }
         }
 
@@ -188,45 +261,67 @@
             }
         }
 
-        function generateMessage() {
-            const serviceCheckboxes = document.querySelectorAll('input[name="service"]:checked');
-            if (serviceCheckboxes.length === 0) {
-                alert("Por favor, selecione pelo menos um serviço.");
-                return;
+        function validateStep() {
+            switch (currentStep) {
+                case 1:
+                    return validateServices();
+                case 2:
+                    return validateFilm();
+                case 3:
+                    return validatePositivePoints();
+                default:
+                    return true;
             }
+        }
 
-            const services = Array.from(serviceCheckboxes).map(checkbox => {
-                const quantity = checkbox.nextElementSibling.value;
-                const serviceType = checkbox.value.toLowerCase() + (quantity > 1 ? 's' : '');
-                return `${quantity} ${serviceType}`;
-            });
+        function validateServices() {
+            const services = document.querySelectorAll('input[name="service"]:checked');
+            if (services.length === 0) {
+                alert("Por favor, selecione pelo menos um serviço.");
+                return false;
+            }
+            return true;
+        }
 
+        function validateFilm() {
             const film = document.querySelector('input[name="film"]:checked');
             if (!film) {
                 alert("Por favor, selecione o tipo de película.");
-                return;
+                return false;
             }
+            return true;
+        }
 
-            const checkboxes = document.querySelectorAll('.checkboxes input[type="checkbox"]:checked');
-            const selectedPoints = Array.from(checkboxes).map(checkbox => checkbox.value);
-
-            if (selectedPoints.length === 0) {
+        function validatePositivePoints() {
+            const positivePoints = document.querySelectorAll('input[name="positive_points"]:checked');
+            if (positivePoints.length === 0) {
                 alert("Por favor, selecione pelo menos um ponto positivo.");
-                return;
+                return false;
             }
+            return true;
+        }
 
-            const message = generateReview(services, film.value, selectedPoints);
+        function generateMessage() {
+            const services = Array.from(document.querySelectorAll('input[name="service"]:checked'))
+                .map(checkbox => {
+                    const quantity = checkbox.nextElementSibling.value;
+                    const serviceType = checkbox.value.toLowerCase() + (quantity > 1 ? 's' : '');
+                    return `${quantity} ${serviceType}`;
+                });
 
-            const textarea = document.getElementById("message");
-            textarea.value = message;
-            textarea.style.display = "block";
+            const film = document.querySelector('input[name="film"]:checked').value;
+            const positivePoints = Array.from(document.querySelectorAll('input[name="positive_points"]:checked'))
+                .map(checkbox => checkbox.value);
+
+            const message = generateReview(services, film, positivePoints);
+            document.getElementById("message").value = message;
         }
 
         function getRandomElement(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
 
-        function generateReview(services, film, selectedPoints) {
+        function generateReview(services, film, positivePoints) {
             const openingPhrases = [
                 `Recebi um serviço de aplicação de película ${film.toLowerCase()} em ${services.join(' e ')}.`,
                 `A experiência com a Películas Brasil na aplicação de película ${film.toLowerCase()} em ${services.join(' e ')} foi excelente.`,
@@ -240,11 +335,11 @@
                 "Voltarei com certeza!",
                 "Um serviço de alta qualidade!",
                 "Estou muito satisfeito!",
-                "A qualidade éincomparável!"
+                "A qualidade é incomparável!"
             ];
 
             const opening = getRandomElement(openingPhrases);
-            const pointsDescriptions = selectedPoints.map(point => `O serviço prestado foi realmente ${point.toLowerCase()}.`).join(" ");
+            const pointsDescriptions = positivePoints.map(point => `O serviço prestado foi realmente ${point.toLowerCase()}.`).join(" ");
             const closing = getRandomElement(closingPhrases);
 
             return `${opening} ${pointsDescriptions} ${closing}`;
@@ -258,11 +353,13 @@
             const preloader = document.getElementById("preloader");
             preloader.style.display = "block";
 
-            setTimeout(function() {
+            setTimeout(() => {
                 window.open("https://g.page/r/Ca0B0lo4FAFiEAI/review", "_blank");
                 preloader.style.display = "none";
-            }, 3000);  // Aguarda 3 segundos antes de abrir o link
+            }, 3000);
         }
+
+        updateProgressBar();
     </script>
 </body>
 </html>
