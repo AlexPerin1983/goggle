@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Avaliar Nossa Empresa</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+        }
+        .progress-container {
+            width: 100%;
+            background: #f4f4f4;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 20px;
+            background: #4CAF50;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+        .service-selection, .film-selection, .checkboxes {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .service-selection label, .film-selection label, .checkboxes label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .service-selection input, .film-selection input, .checkboxes input {
+            margin-right: 10px;
+        }
+        .counter {
+            display: inline-block;
+            margin-left: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #preloader {
+            display: none;
+            margin-top: 20px;
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #message {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: none;
+            resize: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Avalie Nossa Empresa</h2>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div id="step1" class="step active">
+            <p>Selecione os serviços que você recebeu:</p>
+            <div class="service-selection">
+                <label><input type="checkbox" name="service" value="Janela"> Janela <input type="number" class="counter" name="janela_quantity" min="1" max="10" value="1" style="display: none;"></label>
+                <label><input type="checkbox" name="service" value="Porta"> Porta <input type="number" class="counter" name="porta_quantity" min="1" max="10" value="1" style="display: none;"></label>
+            </div>
+            <button onclick="nextStep()">Próximo</button>
+        </div>
+        <div id="step2" class="step">
+            <p>Selecione o tipo de película:</p>
+            <div class="film-selection">
+                <label><input type="radio" name="film" value="Blackout"> Blackout</label>
+                <label><input type="radio" name="film" value="Jateada"> Jateada</label>
+            </div>
+            <button onclick="prevStep()">Anterior</button>
+            <button onclick="nextStep()">Próximo</button>
+        </div>
+        <div id="step3" class="step">
+            <p>Selecione os pontos positivos que você gostaria de destacar na avaliação:</p>
+            <div class="checkboxes">
+                <label><input type="checkbox" value="Serviço de qualidade"> Serviço de qualidade</label>
+                <label><input type="checkbox" value="Chegou no horário"> Chegou no horário</label>
+            </div>
+            <button onclick="prevStep()">Anterior</button>
+            <button onclick="nextStep()">Próximo</button>
+        </div>
+        <div id="step4" class="step">
+            <p>Revisão e cópia da avaliação:</p>
+            <textarea id="message" readonly></textarea>
+            <button onclick="prevStep()">Anterior</button>
+            <button onclick="copyAndOpenLink()">Copiar Avaliação e Avaliar</button>
+            <div id="preloader" class="spinner"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+
+        document.querySelectorAll('input[name="service"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const counter = this.nextElementSibling;
+                if (this.checked) {
+                    counter.style.display = 'inline-block';
+                } else {
+                    counter.style.display = 'none';
+                }
+            });
+        });
+
+        function updateProgressBar() {
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = (currentStep - 1) * 33 + '%';
+        }
+
+        function nextStep() {
+            if (currentStep < 4) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                currentStep++;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                updateProgressBar();
+            }
+
+            if (currentStep === 4) {
+                generateMessage();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                currentStep--;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                updateProgressBar();
+            }
+        }
+
+        function generateMessage() {
+            const serviceCheckboxes = document.querySelectorAll('input[name="service"]:checked');
+            if (serviceCheckboxes.length === 0) {
+                alert("Por favor, selecione pelo menos um serviço.");
+                return;
+            }
+
+            const services = Array.from(serviceCheckboxes).map(checkbox => {
+                const quantity = checkbox.nextElementSibling.value;
+                const serviceType = checkbox.value.toLowerCase() + (quantity > 1 ? 's' : '');
+                return `${quantity} ${serviceType}`;
+            });
+
+            const film = document.querySelector('input[name="film"]:checked');
+            if (!film) {
+                alert("Por favor, selecione o tipo de película.");
+                return;
+            }
+
+            const checkboxes = document.querySelectorAll('.checkboxes input[type="checkbox"]:checked');
+            const selectedPoints = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+            if (selectedPoints.length === 0) {
+                alert("Por favor, selecione pelo menos um ponto positivo.");
+                return;
+            }
+
+            const message = generateReview(services, film.value, selectedPoints);
+
+            const textarea = document.getElementById("message");
+            textarea.value = message;
+            textarea.style.display = "block";
+        }
+
+        function getRandomElement(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generateReview(services, film, selectedPoints) {
+            const openingPhrases = [
+                `Recebi um serviço de aplicação de película ${film.toLowerCase()} em ${services.join(' e ')}.`,
+                `A experiência com a Películas Brasil na aplicação de película ${film.toLowerCase()} em ${services.join(' e ')} foi excelente.`,
+                `Estou muito satisfeito com o serviço de aplicação de película ${film.toLowerCase()} em ${services.join(' e ')}.`,
+                `A qualidade do serviço de aplicação de película ${film.toLowerCase()} em ${services.join(' e ')} foi excepcional.`,
+                `A Películas Brasil fez um excelente trabalho na aplicação de película ${film.toLowerCase()} em ${services.join(' e ')}.`
+            ];
+
+            const closingPhrases = [
+                "Recomendo muito!",
+                "Voltarei com certeza!",
+                "Um serviço de alta qualidade!",
+                "Estou muito satisfeito!",
+                "A qualidade éincomparável!"
+            ];
+
+            const opening = getRandomElement(openingPhrases);
+            const pointsDescriptions = selectedPoints.map(point => `O serviço prestado foi realmente ${point.toLowerCase()}.`).join(" ");
+            const closing = getRandomElement(closingPhrases);
+
+            return `${opening} ${pointsDescriptions} ${closing}`;
+        }
+
+        function copyAndOpenLink() {
+            const textarea = document.getElementById("message");
+            textarea.select();
+            document.execCommand("copy");
+
+            const preloader = document.getElementById("preloader");
+            preloader.style.display = "block";
+
+            setTimeout(function() {
+                window.open("https://g.page/r/Ca0B0lo4FAFiEAI/review", "_blank");
+                preloader.style.display = "none";
+            }, 3000);  // Aguarda 3 segundos antes de abrir o link
+        }
+    </script>
+</body>
+</html>
