@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avalie Nossa Empresa</title>
+    <title>Avaliar Nossa Empresa</title>
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -20,7 +20,7 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             background-color: var(--background-color);
             display: flex;
             flex-direction: column;
@@ -38,8 +38,9 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: var(--border-radius);
             text-align: center;
-            max-width: 100%;
+            max-width: 600px;
             width: 100%;
+            margin: 0 auto;
         }
 
         h2 {
@@ -115,6 +116,17 @@
             background-color: var(--secondary-color);
         }
 
+        #message {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+            min-height: 100px;
+            font-size: 1rem;
+        }
+
         #preloader {
             display: none;
             margin: 20px auto;
@@ -129,21 +141,6 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-
-        .review-output-container {
-            text-align: left;
-            margin-top: 20px;
-        }
-
-        .review-output {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            resize: none;
-            font-size: 1rem;
-            min-height: 150px;
         }
 
         @media (max-width: 480px) {
@@ -173,10 +170,6 @@
                 width: 40px;
                 font-size: 0.9rem;
             }
-
-            .review-output {
-                font-size: 0.9rem;
-            }
         }
     </style>
 </head>
@@ -198,19 +191,6 @@
                         <input type="checkbox" name="service" value="Porta"> Porta
                         <input type="number" class="counter" name="porta_quantity" min="1" max="10" value="1" style="display: none;">
                     </label>
-                    <label>
-                        <input type="checkbox" name="service" value="Teto de vidro"> Teto de vidro
-                    </label>
-                    <label>
-                        <input type="checkbox" name="service" value="Sacada"> Sacada
-                    </label>
-                    <label>
-                        <input type="checkbox" name="service" value="Cortina de Vidro"> Cortina de Vidro
-                    </label>
-                    <label>
-                        <input type="checkbox" name="service" value="Box"> Box
-                        <input type="number" class="counter" name="box_quantity" min="1" max="10" value="1" style="display: none;">
-                    </label>
                 </div>
                 <button type="button" onclick="nextStep()">Próximo</button>
             </div>
@@ -219,9 +199,6 @@
                 <div class="form-group">
                     <label><input type="radio" name="film" value="Blackout"> Blackout</label>
                     <label><input type="radio" name="film" value="Jateada"> Jateada</label>
-                    <label><input type="radio" name="film" value="Espelhada"> Espelhada</label>
-                    <label><input type="radio" name="film" value="Segurança"> Segurança</label>
-                    <label><input type="radio" name="film" value="Fume"> Fume</label>
                 </div>
                 <button type="button" onclick="prevStep()">Anterior</button>
                 <button type="button" onclick="nextStep()">Próximo</button>
@@ -235,21 +212,18 @@
                     <label><input type="checkbox" name="positive_points" value="Resultado excepcional"> Resultado excepcional</label>
                 </div>
                 <button type="button" onclick="prevStep()">Anterior</button>
-                <button type="button" onclick="generateReview()">Gerar Avaliação</button>
+                <button type="button" onclick="nextStep()">Próximo</button>
             </div>
-            <div id="step4" class="step review-output-container">
-                <p>Sua avaliação gerada:</p>
-                <textarea id="output" class="review-output" rows="10" readonly></textarea>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button type="button" onclick="prevStep()">Editar</button>
-                    <button type="button" onclick="copyAndOpenLink()">Copiar e Avaliar</button>
-                </div>
+            <div id="step4" class="step">
+                <p>Revisão e cópia da avaliação:</p>
+                <textarea id="message" readonly></textarea>
+                <button type="button" onclick="prevStep()">Anterior</button>
+                <button type="button" onclick="copyAndOpenLink()">Copiar e Avaliar</button>
                 <div id="preloader"></div>
             </div>
         </form>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         let currentStep = 1;
         const totalSteps = 4;
@@ -257,9 +231,7 @@
         document.querySelectorAll('input[name="service"]').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
                 const counter = this.nextElementSibling;
-                if (counter && (this.value === 'Janela' || this.value === 'Porta' || this.value === 'Box')) {
-                    counter.style.display = this.checked ? 'inline-block' : 'none';
-                }
+                counter.style.display = this.checked ? 'inline-block' : 'none';
             });
         });
 
@@ -274,6 +246,10 @@
                 currentStep++;
                 document.getElementById(`step${currentStep}`).classList.add('active');
                 updateProgressBar();
+
+                if (currentStep === totalSteps) {
+                    generateMessage();
+                }
             }
         }
 
@@ -326,10 +302,10 @@
             return true;
         }
 
-        async function generateReview() {
+        function generateMessage() {
             const services = Array.from(document.querySelectorAll('input[name="service"]:checked'))
                 .map(checkbox => {
-                    const quantity = checkbox.nextElementSibling ? checkbox.nextElementSibling.value : 1;
+                    const quantity = checkbox.nextElementSibling.value;
                     const serviceType = checkbox.value.toLowerCase() + (quantity > 1 ? 's' : '');
                     return `${quantity} ${serviceType}`;
                 });
@@ -338,54 +314,50 @@
             const positivePoints = Array.from(document.querySelectorAll('input[name="positive_points"]:checked'))
                 .map(checkbox => checkbox.value);
 
-            const userInput = `
-                Serviços: ${services.join(', ')}
-                Tipo de película: ${film}
-                Pontos positivos: ${positivePoints.join(', ')}
-            `;
+            const message = generateReview(services, film, positivePoints);
+            document.getElementById("message").value = message;
+        }
+
+        function getRandomElement(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generateReview(services, film, positivePoints) {
+            const openingPhrases = [
+                `Recebi um serviço de aplicação de película ${film.toLowerCase()} em ${services.join(' e ')}.`,
+                `A experiência com a Películas Brasil na aplicação de película ${film.toLowerCase()} em ${services.join(' e ')} foi excelente.`,
+                `Estou muito satisfeito com o serviço de aplicação de película ${film.toLowerCase()} em ${services.join(' e ')}.`,
+                `A qualidade do serviço de aplicação de película ${film.toLowerCase()} em ${services.join(' e ')} foi excepcional.`,
+                `A Películas Brasil fez um excelente trabalho na aplicação de película ${film.toLowerCase()} em ${services.join(' e ')}.`
+            ];
+
+            const closingPhrases = [
+                "Recomendo muito!",
+                "Voltarei com certeza!",
+                "Um serviço de alta qualidade!",
+                "Estou muito satisfeito!",
+                "A qualidade é incomparável!"
+            ];
+
+            const opening = getRandomElement(openingPhrases);
+            const pointsDescriptions = positivePoints.map(point => `O serviço prestado foi realmente ${point.toLowerCase()}.`).join(" ");
+            const closing = getRandomElement(closingPhrases);
+
+            return `${opening} ${pointsDescriptions} ${closing}`;
+        }
+
+        function copyAndOpenLink() {
+            const textarea = document.getElementById("message");
+            textarea.select();
+            document.execCommand("copy");
 
             const preloader = document.getElementById("preloader");
             preloader.style.display = "block";
 
-            try {
-                const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-                    model: "gpt-4o-mini",
-                    messages: [
-                        { role: "system", content: "Você é um cliente satisfeito com o serviço prestado. Seja direto e não enrole. Crie frases curtas e diretas para descrever a avaliação. Não use gênero." },
-                        { role: "user", content: `Junte as seguintes informações e corrija a avaliação com coerência: ${userInput}` }
-                    ],
-                    temperature: 1,
-                    max_tokens: 256,
-                    top_p: 1,
-                    frequency_penalty: 0,
-                    presence_penalty: 0
-                }, {
-                    headers: {
-                        'Authorization': 'Bearer sk-proj-VSwEJVqlI7dsfMhEfqA4T3BlbkFJZjMnX81LPYS8FjsSWaGN',
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                let generatedText = response.data.choices[0].message.content.trim();
-
-                document.getElementById("output").value = generatedText;
-                nextStep(); // Move to the final step to show the generated review
-            } catch (error) {
-                console.error('Erro ao gerar texto:', error);
-                document.getElementById("output").value = 'Erro ao gerar texto. Por favor, tente novamente mais tarde.';
-            } finally {
-                preloader.style.display = "none";
-            }
-        }
-
-        function copyAndOpenLink() {
-            const textarea = document.getElementById("output");
-            textarea.select();
-            document.execCommand("copy");
-
             setTimeout(() => {
                 window.open("https://g.page/r/Ca0B0lo4FAFiEAI/review", "_blank");
-            }, 1000);
+                preloader.style.display = "none";
+            }, 3000);
         }
 
         updateProgressBar();
