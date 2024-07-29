@@ -361,7 +361,7 @@
                     presence_penalty: 0
                 }, {
                     headers: {
-                        'Authorization': 'Bearer sk-None-l7eygnXNxGygGIgtjciiT3BlbkFJu1ySE5QZ95cA2x93hjuI',
+                        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
                         'Content-Type': 'application/json'
                     }
                 });
